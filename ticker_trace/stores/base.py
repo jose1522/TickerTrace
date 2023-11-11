@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from utils.exceptions import MissingRecordException
+
 
 class BaseDBTransaction:
     def __init__(self, session):
@@ -47,8 +49,13 @@ class BaseDBTransaction:
     def update(self, obj_id, data):
         if isinstance(data, BaseModel):
             data = data.model_dump(exclude={"id"})
-        data.pop("id")
+        data.pop("id", None)
         obj = self.get(obj_id)
+        if obj is None:
+            raise MissingRecordException(
+                f"{self.model.__name__} with id {obj_id} does not exist"
+            )
         for key, value in data.items():
-            obj[key] = value
-        self.session.add(obj)
+            if hasattr(obj, key):
+                setattr(obj, key, value)
+        return obj

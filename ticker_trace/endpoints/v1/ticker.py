@@ -6,7 +6,7 @@ from models import get_session
 from schemas.ticker import TickerCreate, TickerUpdate
 from stores.ticker import TickerDBTransaction
 
-router = APIRouter(prefix="/ticker")
+router = APIRouter(prefix="/ticker", tags=["Ticker"])
 
 
 @router.post("/", status_code=201, response_model=TickerUpdate)
@@ -43,3 +43,9 @@ def get_all_tickers(
         else:
             objs = ticker.get_all(page=page, page_size=page_size)
     return objs
+
+
+@router.put("/{ticker_id}", response_model=TickerUpdate)
+def update_ticker(ticker_id: int, data: TickerCreate, session=Depends(get_session)):
+    with TickerDBTransaction(session) as ticker:
+        return ticker.update(ticker_id, data)

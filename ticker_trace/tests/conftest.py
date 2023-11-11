@@ -14,7 +14,15 @@ engine = create_engine(
     poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-BaseModel.metadata.create_all(engine)
+
+
+def truncate_tables():
+    # Open a session
+    with TestingSessionLocal() as session:
+        # Iterate over all tables and truncate them
+        for table in reversed(BaseModel.metadata.sorted_tables):
+            session.execute(table.delete())
+        session.commit()
 
 
 @pytest.fixture(name="session")
@@ -29,6 +37,8 @@ def get_client():
         with TestingSessionLocal() as session:
             yield session
 
+    BaseModel.metadata.create_all(engine)
+    truncate_tables()
     app.dependency_overrides[get_session] = overwrite_session
     client = TestClient(app)
     return client

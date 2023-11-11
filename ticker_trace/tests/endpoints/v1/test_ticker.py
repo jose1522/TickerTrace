@@ -44,22 +44,22 @@ def test_get_ticket_by_id(client, session):
 
 
 @pytest.mark.parametrize(
-    ("symbol", "name", "pk"),
-    (("AAPL", "Apple Inc.", 1), ("TSLA", "Tesla Inc.", 2)),
+    ("symbol", "name"),
+    (("AAPL", "Apple Inc."), ("TSLA", "Tesla Inc.")),
     ids=("AAPL", "TSLA"),
 )
-def test_get_ticket_by_query_param(client, session, symbol, name, pk):
+def test_get_ticket_by_query_param(client, session, symbol, name):
     data = {"symbol": symbol, "name": name}
     response = client.get(f"/v1/ticker/?symbol={symbol}")
     assert response.json() == []
     with TickerDBTransaction(session) as ticker:
         ticker.add(ticker.new_object(data))
     response = client.get(f"/v1/ticker/?symbol={symbol}")
-    assert response.json() == [{"id": pk, "symbol": symbol, "name": name}]
+    assert response.json() == [{"id": 1, "symbol": symbol, "name": name}]
     response = client.get(f"/v1/ticker/?name={name}")
-    assert response.json() == [{"id": pk, "symbol": symbol, "name": name}]
+    assert response.json() == [{"id": 1, "symbol": symbol, "name": name}]
     response = client.get(f"/v1/ticker/?symbol={symbol}&name={name}")
-    assert response.json() == [{"id": pk, "symbol": symbol, "name": name}]
+    assert response.json() == [{"id": 1, "symbol": symbol, "name": name}]
 
 
 def test_get_all_tickers(client, session):
@@ -74,3 +74,22 @@ def test_get_all_tickers(client, session):
     response = client.get("/v1/ticker/")
     assert response.status_code == 200
     assert len(response.json()) == 2
+
+
+def test_update_ticker(client, session):
+    ticker = TickerDBTransaction(session)
+    assert ticker.get(1) is None
+    ticker.add(ticker.new_object({"symbol": "AAPL", "name": "Apple Inc."}))
+    ticker.session.commit()
+    response = client.put("/v1/ticker/1", json={"symbol": "TSLA", "name": "Tesla"})
+    assert response.status_code == 200
+    assert response.json() == {"id": 1, "symbol": "TSLA", "name": "Tesla"}
+    assert ticker.get(1).symbol == "TSLA"
+
+
+def test_update_missing_record(client, session):
+    ticker = TickerDBTransaction(session)
+    assert ticker.get(1) is None
+    response = client.put("/v1/ticker/1", json={"symbol": "TSLA", "name": "Tesla"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Ticker with id 1 does not exist"}
