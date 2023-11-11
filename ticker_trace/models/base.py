@@ -16,9 +16,3 @@ class BaseModel(DeclarativeBase):
 
     def __str__(self):
         return f"<{self.__class__.__name__} {self.__dict__}>"
-
-    def __getitem__(self, key):
-        return self.__dict__[key]
-
-    def __setitem__(self, key, value):
-        self.__dict__[key] = value

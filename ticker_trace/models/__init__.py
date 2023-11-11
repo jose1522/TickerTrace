@@ -2,6 +2,7 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
 from .base import BaseModel
 from .ticker import Ticker
+from .price import Price
 
 import settings
 
@@ -18,4 +19,4 @@ def migrate():
     BaseModel.metadata.create_all(engine)
 
 
-__all__ = ["BaseModel", "get_session", "migrate", "Ticker"]
+__all__ = ["BaseModel", "get_session", "migrate", "Ticker", "Price"]
