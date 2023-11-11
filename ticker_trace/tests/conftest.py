@@ -1,3 +1,5 @@
+import os
+
 from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy import create_engine, StaticPool
@@ -42,3 +44,17 @@ def get_client():
     app.dependency_overrides[get_session] = overwrite_session
     client = TestClient(app)
     return client
+
+
+@pytest.fixture(scope="module")
+def vcr_config():
+    return {
+        # Filter out the api key from the request
+        "filter_query_parameters": ["apikey"],
+    }
+
+
+@pytest.fixture(scope="module")
+def vcr_cassette_dir(request):
+    # Put all cassettes in vcr/{test}.yaml
+    return "vcr"

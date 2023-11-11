@@ -2,7 +2,7 @@ from decouple import config
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 AV_API_KEY = config("AV_API_KEY", default="")
-AV_API_URL = config("AV_API_URL", default="https://www.alphavantage.co/query")
+AV_API_URL = config("AV_API_URL", default="https://www.alphavantage.co")
 
 # Build database connection url
 DB_USER = config("DB_USER", default="")

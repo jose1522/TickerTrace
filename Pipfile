@@ -9,11 +9,13 @@ uvicorn = "*"
 sqlalchemy = "*"
 python-decouple = "*"
 psycopg2-binary = "*"
+httpx = "*"
 
 [dev-packages]
 black = "*"
 pytest = "*"
-httpx = "*"
+pytest-vcr = "*"
+pytest-asyncio = "*"
 
 [requires]
 python_version = "3.11"
