@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, List
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -19,9 +19,22 @@ class APIPrices(BaseModel):
     @model_validator(mode="before")
     def validate(cls, values: Any) -> Any:
         prices = []
-        for key, value in values["prices"].items():
+        for key, value in values["records"].items():
             key = datetime.datetime.strptime(key, "%Y-%m-%d").date()
             value["date"] = key
             prices.append(value)
-        values["prices"] = prices
+        values["records"] = prices
         return values
+
+
+class PriceCreate(BaseModel):
+    symbol: str
+
+
+class PriceRecord(BaseModel):
+    date: datetime.date
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: int

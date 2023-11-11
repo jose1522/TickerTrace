@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+import sqlalchemy.dialects as dialects
 
 from utils.exceptions import MissingRecordException
 
@@ -7,6 +8,7 @@ class BaseDBTransaction:
     def __init__(self, session):
         self.session = session
         self.model = None
+        self.dialect = getattr(dialects, self.session.bind.dialect.name)
 
     def __enter__(self):
         return self
@@ -59,3 +61,8 @@ class BaseDBTransaction:
             if hasattr(obj, key):
                 setattr(obj, key, value)
         return obj
+
+    def bulk_insert(self, data):
+        stmt = self.dialect.insert(self.model).values(data)
+        stmt = stmt.on_conflict_do_nothing()
+        self.session.execute(stmt)

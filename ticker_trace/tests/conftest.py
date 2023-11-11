@@ -48,6 +48,7 @@ def vcr_config():
     return {
         # Filter out the api key from the request
         "filter_query_parameters": ["apikey"],
+        "filter_response_headers": ["CF-RAY", "Date"],
     }
 
 

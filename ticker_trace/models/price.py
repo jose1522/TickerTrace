@@ -9,7 +9,7 @@ from models.base import BaseModel
 class Price(BaseModel):
     __tablename__ = "price"
 
-    date: Mapped[datetime.date] = MappedColumn(nullable=False)
+    date: Mapped[datetime.date] = MappedColumn(nullable=False, index=True)
     open: Mapped[float]
     close: Mapped[float]
     high: Mapped[float]

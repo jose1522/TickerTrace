@@ -8,6 +8,6 @@ from schemas.price import APIPrices
 @pytest.mark.vcr(record_mode="once", match_on=["uri", "method"])
 async def test_get_ticker():
     api = AlphaVantage()
-    response = await api.get_prices(symbol="AAPL")
-    response = APIPrices(prices=response)
-    assert len(response.records) == 6047
+    response = await api.get_daily_prices(symbol="IBM")
+    response = APIPrices(records=response)
+    assert len(response.records) == 100
