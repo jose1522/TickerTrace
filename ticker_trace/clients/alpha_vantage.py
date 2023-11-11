@@ -1,5 +1,6 @@
 from clients.base import AsyncHTTPClient
 import settings
+from utils.exceptions import ExternalSourceException
 
 
 class AlphaVantage(AsyncHTTPClient):
@@ -22,4 +23,9 @@ class AlphaVantage(AsyncHTTPClient):
             "apikey": self.api_key,
         }
         response = await self.get("/query", params=params)
-        return response["Time Series (Daily)"]
+        records = response.get("Time Series (Daily)")
+        if not records:
+            raise ExternalSourceException(
+                f"Error retrieving data for {symbol}: {response}"
+            )
+        return records

@@ -18,6 +18,8 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=400, content={"detail": exc.message})
         except MissingRecordException as exc:
             return JSONResponse(status_code=404, content={"detail": exc.message})
+        except ExternalSourceException as exc:
+            return JSONResponse(status_code=502, content={"detail": exc.message})
         except Exception as exc:
             traceback.print_exc()
             return JSONResponse(
