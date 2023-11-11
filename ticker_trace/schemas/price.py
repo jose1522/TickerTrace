@@ -14,7 +14,7 @@ class APIPriceRecord(BaseModel):
 
 
 class APIPrices(BaseModel):
-    prices: List[APIPriceRecord]
+    records: List[APIPriceRecord]
 
     @model_validator(mode="before")
     def validate(cls, values: Any) -> Any:

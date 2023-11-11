@@ -9,5 +9,5 @@ from schemas.price import APIPrices
 async def test_get_ticker():
     api = AlphaVantage()
     response = await api.get_prices(symbol="AAPL")
-    records = APIPrices(prices=response)
-    assert len(records.prices) == 6047
+    response = APIPrices(prices=response)
+    assert len(response.records) == 6047
