@@ -1,13 +1,10 @@
-import os
-
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, StaticPool
 from sqlalchemy.orm import sessionmaker
-from models import get_session, BaseModel
 
 from main import app
-
+from models import get_session, BaseModel
 
 # Create an engine with a static connection pool so that the same connection is used for all tests
 engine = create_engine(

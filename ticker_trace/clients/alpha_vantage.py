@@ -25,4 +25,5 @@ class AlphaVantage(AsyncHTTPClient):
             "outputsize": output_size,
             "month": month,
         }
-        return await self.get("/query", params=params)
+        response = await self.get("/query", params=params)
+        return response["Time Series (Daily)"]

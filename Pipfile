@@ -14,8 +14,8 @@ httpx = "*"
 [dev-packages]
 black = "*"
 pytest = "*"
-pytest-vcr = "*"
 pytest-asyncio = "*"
+pytest-recording = "*"
 
 [requires]
 python_version = "3.11"
