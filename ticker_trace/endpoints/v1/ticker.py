@@ -1,19 +1,28 @@
-from typing import List, Optional
+from typing import List, Optional, Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks, Header
 
 from models import get_session
 from schemas.ticker import TickerCreate, TickerUpdate
 from stores.ticker import TickerDBTransaction
+from tasks.price import update_price
 
 router = APIRouter(prefix="/ticker", tags=["Ticker"])
 
 
 @router.post("/", status_code=201, response_model=TickerUpdate)
-def add_new_ticker(data: TickerCreate, session=Depends(get_session)):
+def add_new_ticker(
+    data: TickerCreate,
+    background_tasks: BackgroundTasks,
+    session=Depends(get_session),
+    api_key: Annotated[str | None, Header(description="Alpha Vantage API key")] = None,
+):
     with TickerDBTransaction(session) as ticker:
         obj = ticker.new_object(data)
         ticker.add(obj)
+    background_tasks.add_task(
+        update_price, api_key=api_key, symbol=data.symbol, session=session
+    )
     return obj
 
 

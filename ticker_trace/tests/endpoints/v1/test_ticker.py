@@ -8,11 +8,11 @@ def test_add_new_ticker(client, session):
     assert ticker.get(1) is None
     response = client.post(
         "/v1/ticker/",
-        json={"symbol": "AAPL", "name": "Apple Inc."},
+        json={"symbol": "IBM", "name": "IBM Inc."},
         headers={"Content-Type": "application/json"},
     )
     assert response.status_code == 201
-    assert ticker.get(1).symbol == "AAPL"
+    assert ticker.get(1).symbol == "IBM"
 
 
 def test_add_new_ticker_with_duplicate_symbol(client, session):
@@ -20,27 +20,27 @@ def test_add_new_ticker_with_duplicate_symbol(client, session):
     assert ticker.get(1) is None
     response = client.post(
         "/v1/ticker/",
-        json={"symbol": "AAPL", "name": "Apple Inc."},
+        json={"symbol": "IBM", "name": "IBM Inc."},
         headers={"Content-Type": "application/json"},
     )
     assert response.status_code == 201
     response = client.post(
         "/v1/ticker/",
-        json={"symbol": "AAPL", "name": "Apple Inc."},
+        json={"symbol": "IBM", "name": "IBM Inc."},
         headers={"Content-Type": "application/json"},
     )
     assert response.status_code == 400
-    assert response.json() == {"detail": "Ticker with symbol AAPL already exists"}
+    assert response.json() == {"detail": "Ticker with symbol IBM already exists"}
 
 
 def test_get_ticket_by_id(client, session):
-    data = {"symbol": "AAPL", "name": "Apple Inc."}
+    data = {"symbol": "IBM", "name": "IBM Inc."}
     with TickerDBTransaction(session) as ticker:
         assert ticker.get(1) is None
         ticker.add(ticker.new_object(data))
     response = client.get("/v1/ticker/1")
     assert response.status_code == 200
-    assert response.json() == {"id": 1, "symbol": "AAPL", "name": "Apple Inc."}
+    assert response.json() == {"id": 1, "symbol": "IBM", "name": "IBM Inc."}
 
 
 @pytest.mark.parametrize(

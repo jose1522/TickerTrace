@@ -17,6 +17,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-recording = "*"
 freezegun = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.11"
