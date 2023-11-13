@@ -1,4 +1,4 @@
-from models import Price, Ticker
+from models import Price
 from stores.base import BaseDBTransaction
 from stores.ticker import TickerDBTransaction
 from utils.exceptions import MissingRecordException
@@ -16,7 +16,7 @@ class PriceDBTransaction(BaseDBTransaction):
         ticker = self.ticker_store.get_by_symbol(symbol=symbol)
         if not ticker:
             raise MissingRecordException(f"Ticker with symbol {symbol} does not exist")
-        query = self.session.query(self.model).filter(Ticker.id == ticker.id)
+        query = self.session.query(self.model).filter(Price.ticker_id == ticker.id)
         if start_date:
             query = query.filter(self.model.date >= start_date)
         if end_date:
